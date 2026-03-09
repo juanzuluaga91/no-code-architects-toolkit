@@ -22,8 +22,9 @@ FROM base as builder
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip wheel && \
-    pip wheel --no-cache-dir --no-deps -r requirements.txt -w /wheels
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install jsonschema
 
 # ---------- FINAL IMAGE ----------
 FROM base
