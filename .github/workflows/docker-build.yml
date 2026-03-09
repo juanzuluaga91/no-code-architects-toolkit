@@ -25,5 +25,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: juanzuluaga/nca-toolkit:latest
+          tags: juanzuluaga91/nca-toolkit:latest
           platforms: linux/amd64,linux/arm64
