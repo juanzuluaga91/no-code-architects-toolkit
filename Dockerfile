@@ -22,9 +22,10 @@ FROM base as builder
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install jsonschema
+RUN pip install --upgrade pip
+
+RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /wheels jsonschema
 
 # ---------- FINAL IMAGE ----------
 FROM base
@@ -33,18 +34,14 @@ COPY --from=builder /wheels /wheels
 
 RUN pip install --no-cache-dir /wheels/*
 
-# Whisper install (much faster)
+# Whisper install
 RUN pip install --no-cache-dir openai-whisper
 
-# preload model to avoid first request delay
+# preload model
 RUN python -c "import whisper; whisper.load_model('base')"
 
 COPY . .
 
 EXPOSE 8080
 
-CMD gunicorn \
-    --bind 0.0.0.0:8080 \
-    --workers ${GUNICORN_WORKERS:-8} \
-    --timeout ${GUNICORN_TIMEOUT:-600} \
-    app:app
+CMD ["gunicorn","--bind","0.0.0.0:8080","--workers","8","--timeout","600","app:app"]
